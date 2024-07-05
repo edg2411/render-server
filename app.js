@@ -5,7 +5,7 @@ const PORT = 5000;
   
 app.get('/', (req, res)=>{
     res.status(200);
-    res.send("This is from root");
+    res.send("This is from root!");
 });
   
 app.listen(PORT, (error) =>{
