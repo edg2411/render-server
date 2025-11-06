@@ -2,6 +2,9 @@ const express = require('express');
   
 const app = express();
 const PORT = 5000;
+
+// parse JSON bodies (useful for webhooks)
+app.use(express.json());
   
 app.get('/', (req, res) => {
   const { code, state, error } = req.query; // destructure query parameters
@@ -24,6 +27,23 @@ app.get('/', (req, res) => {
 
   // Just to confirm visually in browser:
   res.send(`Received authorization code: ${code}`);
+});
+
+// Test webhook endpoint - responds 200 OK
+app.post('/testwebhook', (req, res) => {
+  console.log('Test webhook received (POST):', {
+    headers: req.headers,
+    body: req.body,
+  });
+  res.sendStatus(200);
+});
+
+// Optional GET for quick testing from browser
+app.get('/testwebhook', (req, res) => {
+  console.log('Test webhook received (GET):', {
+    query: req.query,
+  });
+  res.sendStatus(200);
 });
 
 app.listen(PORT, () => {
