@@ -7,26 +7,21 @@ const PORT = 5000;
 app.use(express.json());
   
 app.get('/', (req, res) => {
-  const { code, state, error } = req.query; // destructure query parameters
+  const { code, state, error } = req.query;
+
+  // Redirect OAuth callbacks to the real backend
+  if (code && state) {
+    console.log('Redirecting OAuth to backend - code:', code, 'state:', state);
+    return res.redirect(`https://mp-dashboard.edgtech.com.ar/api/oauth/redirect?code=${encodeURIComponent(code)}&state=${encodeURIComponent(state)}`);
+  }
 
   if (error) {
     console.error('OAuth error:', error);
-    return res.status(400).send(`Error: ${error}`);
+    return res.redirect(`https://mp-dashboard.edgtech.com.ar/oauth/callback?error=${encodeURIComponent(error)}`);
   }
 
-  if (!code) {
-    return res.status(400).send('No authorization code received');
-  }
-
-  console.log('Received code:', code);
-  console.log('Received state:', state);
-
-  // Here you could now exchange the code for an access token.
-  // For example:
-  // const tokenResponse = await fetch('https://api.mercadopago.com/oauth/token', {...});
-
-  // Just to confirm visually in browser:
-  res.send(`Received authorization code: ${code}`);
+  // No OAuth params - return 400
+  res.status(400).send('No authorization code received');
 });
 
 // Test webhook endpoint - responds 200 OK
